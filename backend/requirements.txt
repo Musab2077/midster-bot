@@ -1,0 +1,13 @@
+langchain
+fastapi
+uvicorn
+python-dotenv
+pinecone[grpc]
+langchain-pinecone
+langchain_community
+langchain-groq
+langchain_experimental
+tortoise-orm[asyncpg]
+pyjwt
+pydantic[email]
+sentence-transformers==2.2.2
