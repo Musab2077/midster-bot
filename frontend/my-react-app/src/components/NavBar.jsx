@@ -15,13 +15,12 @@ export default function NavBar({ children }) {
 
 export function NavBarItem({
   icon,
-  context,
   logOutFuction,
 }) {
   return (
     <>
       <ul>{icon}</ul>
-      <ul className="hover:bg-hoveringIcon p-2 rounded-xl">{context}</ul>
+      <ul className="hover:bg-hoveringIcon p-2 rounded-xl">MidsterBot</ul>
       <ul className="p-4">
         <button
           className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"

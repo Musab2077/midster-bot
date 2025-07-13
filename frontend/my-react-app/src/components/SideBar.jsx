@@ -1,25 +1,9 @@
 import React, { useState } from "react";
-import { IoChatboxEllipsesOutline } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
 
 export default function SideBar({ children, iconResponse, designing }) {
   const [sideChildren, scChildren] = React.Children.toArray(children);
 
-  const [icon, setIcon] = useState(true);
-  const [newChatHover, setNewChatHover] = useState(false);
   const [animation, setAnimation] = useState();
-
-  const navigate = useNavigate();
-
-  const handleNewChat = () => {
-    navigate("/");
-    setIcon(true);
-    setNewChatHover(true);
-  };
-
-  const handleOpen = () => {
-    setIcon(!icon);
-  };
 
   return (
     <>
@@ -32,19 +16,8 @@ export default function SideBar({ children, iconResponse, designing }) {
       >
         <nav>
           <div className="flex flex-col">
-            <div className="flex flex-row justify-between">
-              {/* top of sideBar */}
-              {iconResponse && (
-                <button
-                  id="new chat"
-                  className="rounded-md hover:bg-hoveringIcon place-items-center size-8"
-                  onClick={handleNewChat}
-                >
-                  <IoChatboxEllipsesOutline className="size-5" />
-                </button>
-              )}
-              {sideChildren}
-            </div>
+            {/* top of sideBar */}
+            {sideChildren}
             {/* Saved Chat */}
             {iconResponse && (
               <div className="my-4">

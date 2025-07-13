@@ -16,20 +16,17 @@ import { IoChatboxEllipsesOutline } from "react-icons/io5";
 
 export default function Chat(props) {
   const navigate = useNavigate();
+
   const [mdDevices, setMdDevices] = useState(window.innerWidth > 845);
   const [iconResponse, setIconResponse] = useState(true);
   const [messages, setMessages] = useState("");
   const [responses, setResponses] = useState([]);
   const [chatResponse, setChatResponse] = useState(false);
-  const [context, setContext] = useState("MidsterBot");
   const [chatId, setChatId] = useState(0);
   const [sideButtons, setSideButtons] = useState();
-  // const [contextResponse, setContextResponse] = useState(true);
   const [chat, setChat] = useState();
   const [overlaySideBar, setOverlaySideBar] = useState(false);
-  // const [response, setResponses]
-
-  const [dummy, setDummy] = useState([]);
+  const [sideBarIconHover, setSideBarIconHover] = useState("");
 
   const { chatIds } = useParams();
 
@@ -52,12 +49,6 @@ export default function Chat(props) {
     toast.success("log-Out Successfully");
   };
 
-  const handleNewChat = () => {};
-
-  const handleSideBarOnSmD = () => {};
-
-  // console.log(localStorage.getItem("email_id"))
-
   const handleSubmit = async (e) => {
     if (messages.trim()) {
       try {
@@ -72,9 +63,8 @@ export default function Chat(props) {
           ...prev.slice(0, -1),
           { human: messages, bot: response.data["response"] },
         ]);
-        setContext(response.data["context"]);
-        // setContextResponse(false);
         setMessages("");
+        navigate(`/chat/${response.data["chat_id"]}`);
       } catch (error) {
         console.error("Error:", error);
         setResponses((prev) => [
@@ -83,13 +73,6 @@ export default function Chat(props) {
         ]);
         setChatResponse(true);
       }
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit(e);
     }
   };
 
@@ -134,7 +117,7 @@ export default function Chat(props) {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [chatIds]);
 
   const handleSavedChat = (e) => {
     setChatId(e.target.id);
@@ -157,13 +140,19 @@ export default function Chat(props) {
         }));
         setResponses(newResponses);
         setChatResponse(true);
+        setMessages("");
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
-  // console.log(responses);
+  const handleNewChat = () => {
+    navigate("/");
+    setMessages("");
+    setResponses([]);
+    setChatId(0);
+  };
 
   return (
     <>
@@ -211,25 +200,37 @@ export default function Chat(props) {
           <>
             <div>
               <SideBar iconResponse={iconResponse}>
-                <button
-                  id="close and expand"
-                  className="size-8 place-items-center cursor-ew-resize hover:bg-hoveringIcon rounded-md"
-                  onClick={() => setIconResponse(!iconResponse)}
-                >
-                  <SideBarItems
-                    expanding={
-                      iconResponse ? (
-                        <GoSidebarExpand className="size-5" />
-                      ) : (
-                        <GoSidebarCollapse className="size-5" />
-                      )
-                    }
-                  />
-                </button>
+                <div className="flex flex-row justify-between">
+                  {iconResponse && (
+                    <button
+                      id="new chat"
+                      className="rounded-md hover:bg-hoveringIcon place-items-center size-8"
+                      onClick={handleNewChat}
+                    >
+                      <IoChatboxEllipsesOutline className="size-5" />
+                    </button>
+                  )}
+                  <button
+                    id="close and expand"
+                    className="size-8 place-items-center cursor-ew-resize hover:bg-hoveringIcon rounded-md"
+                    onClick={() => setIconResponse(!iconResponse)}
+                  >
+                    <SideBarItems
+                      expanding={
+                        iconResponse ? (
+                          <GoSidebarExpand className="size-5" />
+                        ) : (
+                          <GoSidebarCollapse className="size-5" />
+                        )
+                      }
+                    />
+                  </button>
+                </div>
                 <div>
                   {sideButtons &&
-                    sideButtons.map((e) => (
+                    sideButtons.map((e, value) => (
                       <div
+                        key={value}
                         id={e.chat_id}
                         onClick={handleSavedChat}
                         className="hover:bg-hoveringIcon my-1 rounded-lg px-2 py-1 cursor-pointer flex justify-between"
@@ -257,7 +258,6 @@ export default function Chat(props) {
           <NavBar>
             {!mdDevices && (
               <NavBarItem
-                context={context}
                 icon={
                   <button
                     id="NavBar"
@@ -269,9 +269,7 @@ export default function Chat(props) {
                 }
               />
             )}
-            {mdDevices && (
-              <NavBarItem context={context} logOutFuction={handleLogOut} />
-            )}
+            {mdDevices && <NavBarItem logOutFuction={handleLogOut} />}
           </NavBar>
           {/* Bot Responses */}
           <Responses
@@ -289,7 +287,6 @@ export default function Chat(props) {
                 ))}
               </div>
             )}
-            {/* <ResponseInput onSendMessage={handleSubmit}   /> */}
           </Responses>
         </div>
       </div>
