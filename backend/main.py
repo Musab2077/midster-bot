@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from routers.auth import auth_router
 from routers.chat import chat_router
+from routers.loading_chats import loading_chats
 from tortoise.contrib.fastapi import register_tortoise
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 app.include_router(auth_router)
 app.include_router(chat_router)
+app.include_router(loading_chats)
 
 origins = [
     "http://localhost:5173/",
