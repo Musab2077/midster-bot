@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useActionData, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import NavBar, { NavBarItem } from "./NavBar";
 import SideBar, { SideBarItems, SideBarSavedChat } from "./SideBar";
@@ -11,26 +11,29 @@ import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
 import { RxCross2 } from "react-icons/rx";
 import axios from "axios";
 import React from "react";
+import { HiDotsHorizontal } from "react-icons/hi";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 
 export default function Chat(props) {
   const navigate = useNavigate();
   const [mdDevices, setMdDevices] = useState(window.innerWidth > 845);
   const [iconResponse, setIconResponse] = useState(true);
-  const [newChat, setNewChat] = useState();
   const [messages, setMessages] = useState("");
   const [responses, setResponses] = useState([]);
   const [chatResponse, setChatResponse] = useState(false);
   const [context, setContext] = useState("MidsterBot");
   const [chatId, setChatId] = useState(0);
+  const [sideButtons, setSideButtons] = useState();
   // const [contextResponse, setContextResponse] = useState(true);
   const [chat, setChat] = useState();
   const [overlaySideBar, setOverlaySideBar] = useState(false);
   // const [response, setResponses]
 
+  const [dummy, setDummy] = useState([]);
+
+  const { chatIds } = useParams();
+
   const backendUrl = "http://127.0.0.1:8000";
-  // const emailId = localStorage.getItem("email_id");
-  // const token = localStorage.getItem("email_id");
 
   const handleStorage = () => {
     try {
@@ -46,7 +49,7 @@ export default function Chat(props) {
   const handleLogOut = () => {
     localStorage.removeItem("token");
     navigate("/auth");
-    toast.success("Log-Out Successfully");
+    toast.success("log-Out Successfully");
   };
 
   const handleNewChat = () => {};
@@ -61,7 +64,7 @@ export default function Chat(props) {
         setResponses((prev) => [...prev, { human: messages, bot: "..." }]);
         const response = await axios.post(`${backendUrl}/bot_responses`, {
           message: messages,
-          email_id: localStorage.getItem('email_id'),
+          email_id: localStorage.getItem("email_id"),
           chat_id: chatId,
         });
         setChatResponse(true);
@@ -69,7 +72,7 @@ export default function Chat(props) {
           ...prev.slice(0, -1),
           { human: messages, bot: response.data["response"] },
         ]);
-        setContext(response.data["context"]["content"]);
+        setContext(response.data["context"]);
         // setContextResponse(false);
         setMessages("");
       } catch (error) {
@@ -102,6 +105,66 @@ export default function Chat(props) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadingChats = async () => {
+      try {
+        const response = await axios.post(
+          `${backendUrl}/loading_chats`,
+          {
+            email_id: localStorage.getItem("email_id"),
+          },
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        if (isMounted) {
+          setSideButtons(response.data);
+        }
+      } catch (error) {
+        console.error("Error loading chats:", error);
+        if (isMounted) {
+          setSideButtons([]);
+        }
+      }
+    };
+
+    loadingChats();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleSavedChat = (e) => {
+    setChatId(e.target.id);
+    navigate(`/chat/${e.target.id}`);
+    setResponses([]);
+
+    axios
+      .post(
+        `${backendUrl}/accessing_chat`,
+        {
+          id: e.target.id,
+        },
+        { headers: { "Content-Type": "application/json" } }
+      )
+      .then((output) => {
+        const backendRes = output.data;
+        const newResponses = backendRes.map((e) => ({
+          human: e.human,
+          bot: e.bot,
+        }));
+        setResponses(newResponses);
+        setChatResponse(true);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  // console.log(responses);
+
   return (
     <>
       <div className="flex flex-row h-screen bg-mainBg text-white">
@@ -121,6 +184,24 @@ export default function Chat(props) {
                 >
                   <SideBarItems expanding={<RxCross2 className="size-5" />} />
                 </button>
+                <div>
+                  {sideButtons &&
+                    sideButtons.map((e) => (
+                      <div
+                        id={e.chat_id}
+                        onClick={handleSavedChat}
+                        className="hover:bg-hoveringIcon my-1 rounded-lg px-2 py-1 cursor-pointer flex justify-between"
+                      >
+                        <SideBarSavedChat savedChat={e.context} />
+                        <button
+                          key={e.chat_id}
+                          onClick={() => console.log(e.chat_id)}
+                        >
+                          <HiDotsHorizontal />
+                        </button>
+                      </div>
+                    ))}
+                </div>
               </SideBar>
             </div>
           )}
@@ -129,10 +210,7 @@ export default function Chat(props) {
         {mdDevices && (
           <>
             <div>
-              <SideBar
-                scChildren={<SideBarSavedChat />}
-                iconResponse={iconResponse}
-              >
+              <SideBar iconResponse={iconResponse}>
                 <button
                   id="close and expand"
                   className="size-8 place-items-center cursor-ew-resize hover:bg-hoveringIcon rounded-md"
@@ -148,7 +226,24 @@ export default function Chat(props) {
                     }
                   />
                 </button>
-                <SideBarSavedChat />
+                <div>
+                  {sideButtons &&
+                    sideButtons.map((e) => (
+                      <div
+                        id={e.chat_id}
+                        onClick={handleSavedChat}
+                        className="hover:bg-hoveringIcon my-1 rounded-lg px-2 py-1 cursor-pointer flex justify-between"
+                      >
+                        <SideBarSavedChat savedChat={e.context} />
+                        <button
+                          key={e.chat_id}
+                          onClick={() => console.log(e.chat_id)}
+                        >
+                          <HiDotsHorizontal />
+                        </button>
+                      </div>
+                    ))}
+                </div>
               </SideBar>
             </div>
           </>

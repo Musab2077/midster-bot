@@ -1,14 +1,12 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React from "react";
+import { useParams } from "react-router-dom";
 
 const Test = () => {
-    const { id } = useParams();
+  const { chatIds } = useParams();
 
-    return (
-        <div className='text-center'>
-            User Id : {4}
-        </div>
-    );
-}
+  console.log(chatIds);
+
+  return <div className="text-center">User Id : {chatIds}</div>;
+};
 
 export default Test;

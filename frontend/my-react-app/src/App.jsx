@@ -8,9 +8,10 @@ import {
 } from "react-router-dom";
 import Auth from "./components/Auth";
 import ChatBot from "./components/Chat";
-import Test from "./components/Test"
+import Test from "./components/Test";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
+import Chat from "./components/Chat";
 
 function App() {
   const [authResponse, setAuthResponse] = useState();
@@ -50,14 +51,9 @@ function App() {
       <ToastContainer />
       {/* <Bounce/> */}
       <Routes>
-        <Route
-          path="/auth"
-          element={<Auth/>}
-        />
-        <Route
-          path="/:id"
-          element={[<Test/>]}
-        />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/" element={<ChatBot />} />
+        <Route path="/chat/:chatIds" element={<Chat/>}/>
       </Routes>
     </>
   );

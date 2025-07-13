@@ -88,7 +88,7 @@ export function ResponseItems({ humanMsg, botMsg, item }) {
   return (
     <>
       <div key={item} className="place-items-end overflow-hidden">
-        <div className="lg:max-w-md my-5 sm:max-w-sm max-w-64">
+        <div className="lg:max-w-md my-5 sm:max-w-sm max-w-52">
           <div
             className={`${
               humanMsg && "bg-hoveringIcon"

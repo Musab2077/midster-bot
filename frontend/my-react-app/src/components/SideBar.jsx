@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 
-export default function SideBar({
-  children,
-  iconResponse,
-  designing,
-}) {
+export default function SideBar({ children, iconResponse, designing }) {
   const [sideChildren, scChildren] = React.Children.toArray(children);
 
   const [icon, setIcon] = useState(true);
@@ -67,10 +63,6 @@ export function SideBarItems({ expanding }) {
   return expanding;
 }
 
-export function SideBarSavedChat({ savedChat, navigation }) {
-  return (
-    <div className="hover:bg-hoveringIcon rounded-lg pl-2 py-1">
-      <button onClick={navigation}>{savedChat}</button>
-    </div>
-  );
+export function SideBarSavedChat({ savedChat }) {
+  return savedChat;
 }
