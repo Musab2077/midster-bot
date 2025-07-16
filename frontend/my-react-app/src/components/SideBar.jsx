@@ -17,7 +17,7 @@ export default function SideBar({ children, iconResponse, designing }) {
         <nav>
           <div className="flex flex-col">
             {/* top of sideBar */}
-            {sideChildren}
+            <div className="overflow-y-hidden">{sideChildren}</div>
             {/* Saved Chat */}
             {iconResponse && (
               <div className="my-4">

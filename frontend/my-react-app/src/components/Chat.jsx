@@ -10,7 +10,6 @@ import "./scrollbar.css";
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
 import { RxCross2 } from "react-icons/rx";
 import axios from "axios";
-import React from "react";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 
@@ -123,6 +122,7 @@ export default function Chat(props) {
     setChatId(e.target.id);
     navigate(`/chat/${e.target.id}`);
     setResponses([]);
+    setOverlaySideBar(false);
 
     axios
       .post(
@@ -152,6 +152,7 @@ export default function Chat(props) {
     setMessages("");
     setResponses([]);
     setChatId(0);
+    setOverlaySideBar(false);
   };
 
   return (
@@ -166,13 +167,22 @@ export default function Chat(props) {
                 }
                 iconResponse={true}
               >
-                <button
-                  id="cross icon"
-                  onClick={() => setOverlaySideBar(!overlaySideBar)}
-                  className="rounded-md cursor-ew-resize hover:bg-hoveringIcon place-items-center size-8"
-                >
-                  <SideBarItems expanding={<RxCross2 className="size-5" />} />
-                </button>
+                <div className="flex justify-between">
+                  <button
+                    id="new chat"
+                    className="rounded-md hover:bg-hoveringIcon place-items-center size-8"
+                    onClick={handleNewChat}
+                  >
+                    <IoChatboxEllipsesOutline className="size-5" />
+                  </button>
+                  <button
+                    id="cross icon"
+                    onClick={() => setOverlaySideBar(!overlaySideBar)}
+                    className="rounded-md cursor-ew-resize hover:bg-hoveringIcon place-items-center size-8"
+                  >
+                    <SideBarItems expanding={<RxCross2 className="size-5" />} />
+                  </button>
+                </div>
                 <div>
                   {sideButtons &&
                     sideButtons.map((e) => (
@@ -279,11 +289,11 @@ export default function Chat(props) {
             {chatResponse && (
               <div className="max-w-3xl mx-auto">
                 {responses.map((value, key) => (
-                  <ResponseItems
-                    item={key}
-                    humanMsg={value.human}
-                    botMsg={value.bot}
-                  />
+                    <ResponseItems
+                      item={key}
+                      humanMsg={value.human}
+                      botMsg={value.bot}
+                    />
                 ))}
               </div>
             )}

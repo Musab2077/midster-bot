@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Footer from "./Footer";
 import axios from "axios";
+import ReactMarkdown from "react-markdown";
 import { IoIosArrowRoundUp } from "react-icons/io";
 
 const Responses = ({ onSendMessage, handleTextArea, children }) => {
@@ -98,7 +99,9 @@ export function ResponseItems({ humanMsg, botMsg, item }) {
           </div>
         </div>
       </div>
-      <p>{botMsg}</p>
+      <div>
+        <ReactMarkdown>{botMsg}</ReactMarkdown>
+      </div>
     </>
   );
 }

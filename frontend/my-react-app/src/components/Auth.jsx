@@ -24,6 +24,8 @@ export default function Auth(props) {
       if (response.data.verification) {
         toast.success(response.data["response"]);
         navigate("/");
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("email_id", response.data.email_id);
       } else if (response.data.verification == false) {
         toast.error(response.data["response"]);
       }
