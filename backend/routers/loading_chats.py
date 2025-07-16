@@ -16,12 +16,15 @@ class ButtonIds(BaseModel):
 async def loading_chat(arg:Ids):
     newchats = await NewChat.filter(email_id=arg.email_id)
     button_keys = []
-    for newchat in newchats:
-        chat = await Chat.filter(chat_id=newchat.pk)
-        chat = chat[1]
-        button_keys.append({"chat_id":newchat.pk,"context":chat.context})
+    try:
+        for newchat in newchats:
+            chat = await Chat.filter(chat_id=newchat.pk)
+            chat = chat[1]
+            button_keys.append({"chat_id":newchat.pk,"context":chat.context})
 
-    button_keys.reverse()
+        button_keys.reverse()
+    except:
+        return button_keys
     return button_keys
 
 @loading_chats.post('/accessing_chat')
