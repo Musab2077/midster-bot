@@ -44,6 +44,7 @@ def rendering_bot():
             "the question. If you don't know the answer, say that you "
             "don't know. keep the "
             "answer detailed."
+            "Give the answers in markdown format"
             "\n\n"
             "{context}"
         )
@@ -87,7 +88,7 @@ async def bot_responses(bot:BotResponse):
             new_chat = await NewChat.create(email_id = bot.email_id)
             human_chat = await Chat.create(response="human",context=human_context.content,message=bot.message, chat_id=new_chat.pk) # For saving human messages
             bot_chat = await Chat.create(response="bot",context=bot_context.content,message=med_response['answer'], chat_id=new_chat.pk) # For saving bot messages
-            return {'response' : med_response['answer'], "chat_id" : bot_chat.chat_id}
+            return {'response' : med_response['answer'], "chat_id" : new_chat.pk}
         else:
             human_chat = await Chat.create(response="human",context=human_context.content,message=bot.message, chat_id=bot.chat_id) # For saving human messages
             bot_chat = await Chat.create(response="bot",context=bot_context.content,message=med_response['answer'], chat_id=bot.chat_id) # For saving bot messages
