@@ -12,6 +12,7 @@ import { RxCross2 } from "react-icons/rx";
 import axios from "axios";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import { MdOutlineDelete } from "react-icons/md"; // Delete icon
 
 export default function Chat(props) {
   const navigate = useNavigate();
@@ -26,6 +27,8 @@ export default function Chat(props) {
   const [chat, setChat] = useState();
   const [overlaySideBar, setOverlaySideBar] = useState(false);
   const [sideBarIconHover, setSideBarIconHover] = useState("");
+  const [activeChatId, setActiveChatId] = useState(null);
+  const [context, setContext] = useState("MidsterBot");
 
   const { chatIds } = useParams();
 
@@ -92,11 +95,8 @@ export default function Chat(props) {
 
     const loadingChats = async () => {
       try {
-        const response = await axios.post(
-          `${backendUrl}/loading_chats`,
-          {
-            email_id: localStorage.getItem("email_id"),
-          },
+        const response = await axios.get(
+          `${backendUrl}/loading_chats/${localStorage.getItem("email_id")}`,
           { headers: { "Content-Type": "application/json" } }
         );
 
@@ -118,20 +118,18 @@ export default function Chat(props) {
     };
   }, [chatIds]);
 
-  const handleSavedChat = (e) => {
-    setChatId(e.target.id);
-    navigate(`/chat/${e.target.id}`);
+  function handleSavedChat(id, context) {
+    setActiveChatId(id);
+    setChatId(id);
+    navigate(`/chat/${id}`);
     setResponses([]);
     setOverlaySideBar(false);
+    setContext(context);
 
     axios
-      .post(
-        `${backendUrl}/accessing_chat`,
-        {
-          id: e.target.id,
-        },
-        { headers: { "Content-Type": "application/json" } }
-      )
+      .get(`${backendUrl}/accessing_chat/${id}`, {
+        headers: { "Content-Type": "application/json" },
+      })
       .then((output) => {
         const backendRes = output.data;
         const newResponses = backendRes.map((e) => ({
@@ -145,14 +143,26 @@ export default function Chat(props) {
       .catch((error) => {
         console.log(error);
       });
-  };
+  }
+
+  useEffect(() => {
+    handleSavedChat(chatIds, context);
+    console.log(chatIds, context);
+  }, []);
 
   const handleNewChat = () => {
     navigate("/");
     setMessages("");
     setResponses([]);
+    setActiveChatId(null);
     setChatId(0);
     setOverlaySideBar(false);
+    setContext("MidsterBot");
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    console.log(e.target.id);
   };
 
   return (
@@ -184,19 +194,27 @@ export default function Chat(props) {
                   </button>
                 </div>
                 <div>
+                  {/* Mobile Sidebar */}
                   {sideButtons &&
                     sideButtons.map((e) => (
                       <div
                         id={e.chat_id}
-                        onClick={handleSavedChat}
-                        className="hover:bg-hoveringIcon my-1 rounded-lg px-2 py-1 cursor-pointer flex justify-between"
+                        onClick={(e) =>
+                          handleSavedChat(e.target.id, e.target.innerText)
+                        }
+                        className={`${
+                          activeChatId == e.chat_id
+                            ? "bg-hoveringIcon"
+                            : "hover:bg-hoveringIcon"
+                        } my-1 rounded-lg px-2 py-1 cursor-pointer flex justify-between`}
                       >
                         <SideBarSavedChat savedChat={e.context} />
                         <button
+                          className="text-red-600 hover:bg-stone-800 rounded-lg p-1"
                           key={e.chat_id}
-                          onClick={() => console.log(e.chat_id)}
+                          onClick={handleDelete}
                         >
-                          <HiDotsHorizontal />
+                          <MdOutlineDelete className="size-5" />
                         </button>
                       </div>
                     ))}
@@ -237,20 +255,29 @@ export default function Chat(props) {
                   </button>
                 </div>
                 <div>
+                  {/* Desktop Sidebar */}
                   {sideButtons &&
                     sideButtons.map((e, value) => (
                       <div
                         key={value}
                         id={e.chat_id}
-                        onClick={handleSavedChat}
-                        className="hover:bg-hoveringIcon my-1 rounded-lg px-2 py-1 cursor-pointer flex justify-between"
+                        onClick={(e) =>
+                          handleSavedChat(e.target.id, e.target.innerText)
+                        }
+                        className={`${
+                          activeChatId == e.chat_id
+                            ? "bg-hoveringIcon"
+                            : "hover:bg-hoveringIcon"
+                        } my-1 rounded-lg px-2 py-1 cursor-pointer flex justify-between`}
                       >
                         <SideBarSavedChat savedChat={e.context} />
                         <button
-                          key={e.chat_id}
-                          onClick={() => console.log(e.chat_id)}
+                          className="text-red-600 hover:bg-stone-800 rounded-lg p-1"
+                          id={e.chat_id}
+                          key={value}
+                          onClick={handleDelete}
                         >
-                          <HiDotsHorizontal />
+                          <MdOutlineDelete className="size-5" />
                         </button>
                       </div>
                     ))}
@@ -268,6 +295,7 @@ export default function Chat(props) {
           <NavBar>
             {!mdDevices && (
               <NavBarItem
+                context={context}
                 icon={
                   <button
                     id="NavBar"
@@ -279,7 +307,9 @@ export default function Chat(props) {
                 }
               />
             )}
-            {mdDevices && <NavBarItem logOutFuction={handleLogOut} />}
+            {mdDevices && (
+              <NavBarItem context={context} logOutFuction={handleLogOut} />
+            )}
           </NavBar>
           {/* Bot Responses */}
           <Responses
@@ -289,11 +319,11 @@ export default function Chat(props) {
             {chatResponse && (
               <div className="max-w-3xl mx-auto">
                 {responses.map((value, key) => (
-                    <ResponseItems
-                      item={key}
-                      humanMsg={value.human}
-                      botMsg={value.bot}
-                    />
+                  <ResponseItems
+                    item={key}
+                    humanMsg={value.human}
+                    botMsg={value.bot}
+                  />
                 ))}
               </div>
             )}

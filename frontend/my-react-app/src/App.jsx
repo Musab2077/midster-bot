@@ -54,6 +54,7 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/" element={<ChatBot />} />
         <Route path="/chat/:chatIds" element={<Chat/>}/>
+        <Route path="/test" element={<Test/>}/>
       </Routes>
     </>
   );
