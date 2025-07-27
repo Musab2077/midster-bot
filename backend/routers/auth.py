@@ -2,8 +2,6 @@ from fastapi import APIRouter
 import jwt 
 from pydantic import BaseModel,EmailStr
 from modules.auth_tb import User
-from modules.new_chat_tb import NewChat
-from modules.saving_chats_tb import Chat
 
 auth_router = APIRouter()
 
@@ -74,27 +72,6 @@ async def authorization(auth:Auth):
                 'verification' : False,
                 }
 
-# @auth_router.post('/saving_chats')
-# async def example(arg1: EmailId,arg2:Chat_):
-#     if arg2.chat_id == 0:
-#         new_chat = await NewChat.create(email_id = arg1.email_id)
-#         chat = await Chat.create(response=arg2.response,context=arg2.context,message=arg2.message, chat_id=new_chat.pk)
-#         all = await chat.filter(chat_id = new_chat.pk)
-#     else:
-#         chat = await Chat.create(response=arg2.response,context=arg2.context,message=arg2.message, chat_id=arg2.chat_id)
-#         print(chat)
-        
-#     # user = await User.all()
-#     # example = await Chat_.create(email=arg.email_id)
-#     # example = await Chat.create(response=arg.response,context=arg.context,message=arg.message, chat_id=new_chat.pk)
-#     # print(example.all())
-    
-# @auth_router.post('/example_new_chat')
-# async def example(arg1:EmailId, arg2:Chat_):
-#     new_chat = await NewChat.filter(email_id=arg1.email_id)
-#     print(new_chat)
-#     # print(example.email.email)
-#     # user = await User.get(email=example[0].email)
-#     # print(user)
-#     # for i in example:
-#     #     print(i.email_id)
+@auth_router.get('/')
+def just_checking():
+    return { "backend running" : True }
