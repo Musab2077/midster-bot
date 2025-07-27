@@ -10,9 +10,9 @@ export default function SideBar({ children, iconResponse, designing }) {
       <aside
         className={`${
           iconResponse
-            ? `w-64 bg-sidebarBg overflow-y-auto ${designing}`
+            ? `w-64 bg-sidebarBg ${designing}`
             : "w-14 bg-mainBg border border-sidebarBg border-r-black"
-        } min-h-screen pt-4 px-3`}
+        } min-h-screen pt-4 px-3 overflow-y-auto`}
       >
         <nav>
           <div className="flex flex-col">

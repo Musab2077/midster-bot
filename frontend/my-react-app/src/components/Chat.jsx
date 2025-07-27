@@ -26,6 +26,7 @@ export default function Chat(props) {
   const [sideButtons, setSideButtons] = useState();
   const [overlaySideBar, setOverlaySideBar] = useState(false);
   const [activeChatId, setActiveChatId] = useState(null);
+  const [inputResponse, setInputResponse] = useState(true);
   const [context, setContext] = useState("MidsterBot");
 
   const { chatIds = 0 } = useParams();
@@ -64,6 +65,7 @@ export default function Chat(props) {
           { human: messages, bot: response.data["response"] },
         ]);
         setMessages("");
+        setInputResponse(false);
         navigate(`/chat/${response.data["chat_id"]}`);
       } catch (error) {
         console.error("Error:", error);
@@ -118,6 +120,7 @@ export default function Chat(props) {
 
   function handleSavedChat(id) {
     setActiveChatId(id);
+    setInputResponse(false);
     setChatId(id);
     navigate(`/chat/${id}`);
     setResponses([]);
@@ -162,6 +165,7 @@ export default function Chat(props) {
     setResponses([]);
     setChatId(0);
     setOverlaySideBar(false);
+    setInputResponse(true)
     setContext("MidsterBot");
     setActiveChatId(null);
   }
@@ -331,6 +335,7 @@ export default function Chat(props) {
           </NavBar>
           {/* Bot Responses */}
           <Responses
+          inputResponse={inputResponse}
             onSendMessage={handleSubmit}
             handleTextArea={handleTextArea}
           >

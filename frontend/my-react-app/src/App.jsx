@@ -8,7 +8,6 @@ import {
 } from "react-router-dom";
 import Auth from "./components/Auth";
 import ChatBot from "./components/Chat";
-import Test from "./components/Test";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
 import Chat from "./components/Chat";
@@ -54,7 +53,6 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/" element={<ChatBot />} />
         <Route path="/chat/:chatIds" element={<Chat/>}/>
-        <Route path="/test" element={<Test/>}/>
       </Routes>
     </>
   );

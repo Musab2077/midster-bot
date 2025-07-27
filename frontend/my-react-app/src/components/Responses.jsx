@@ -1,10 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import Footer from "./Footer";
-import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { IoIosArrowRoundUp } from "react-icons/io";
 
-const Responses = ({ onSendMessage, handleTextArea, children }) => {
+const Responses = ({
+  inputResponse,
+  onSendMessage,
+  handleTextArea,
+  children,
+}) => {
   const [message, setMessage] = useState("");
   const textareaRef = useRef(null);
 
@@ -43,19 +47,27 @@ const Responses = ({ onSendMessage, handleTextArea, children }) => {
     }
   }, [message]);
 
-  // useEffect(()=>{
-  //   handleSubmit()
-  // },[children])
-
   return (
     <div className="h-screen flex flex-col">
       {/* Bot and Human messages */}
       <div key={2} className="overflow-auto flex-1 px-10">
-        <div key={3} className="mb-14 p-4">{children}</div>
+        <div key={3} className="mb-14 p-4">
+          {children}
+        </div>
       </div>
 
       {/* Input area */}
-      <div className="sticky bottom-0 left-0 right-0 bg-background pt-2 mx-10 pb-4">
+      <div
+        className={`${
+          inputResponse ? "md:bottom-1/3 bottom-0" : "bottom-0"
+        } sticky left-0 right-0 bg-background pt-2 mx-10 pb-4`}
+      >
+        {inputResponse && (
+          <div className="bottom-0 text-center mb-6">
+            <h1 className="text-2xl">From symptoms to solutions</h1>
+            <h4 className="text-lg">faster, smarter, safer with AI.</h4>
+          </div>
+        )}
         <div className="w-full max-w-3xl mx-auto">
           <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
             <div className="relative">
