@@ -184,6 +184,10 @@ export default function Chat(props) {
       handleNewChat();
     }
   }, [chatIds]);
+
+  useEffect(()=> {
+    document.title = context
+  },[context])
   
   return (
     <>
