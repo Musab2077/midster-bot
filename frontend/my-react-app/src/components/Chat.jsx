@@ -24,11 +24,8 @@ export default function Chat(props) {
   const [chatResponse, setChatResponse] = useState(false);
   const [chatId, setChatId] = useState(0);
   const [sideButtons, setSideButtons] = useState();
-  const [chat, setChat] = useState();
   const [overlaySideBar, setOverlaySideBar] = useState(false);
-  const [sideBarIconHover, setSideBarIconHover] = useState("");
   const [activeChatId, setActiveChatId] = useState(null);
-  const [deleteResponse, setDeleteResponse] = useState();
   const [context, setContext] = useState("MidsterBot");
 
   const { chatIds = 0 } = useParams();
