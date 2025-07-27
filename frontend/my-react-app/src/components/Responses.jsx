@@ -50,8 +50,8 @@ const Responses = ({ onSendMessage, handleTextArea, children }) => {
   return (
     <div className="h-screen flex flex-col">
       {/* Bot and Human messages */}
-      <div className="overflow-auto flex-1 px-10">
-        <div className="mb-14 p-4">{children}</div>
+      <div key={2} className="overflow-auto flex-1 px-10">
+        <div key={3} className="mb-14 p-4">{children}</div>
       </div>
 
       {/* Input area */}
@@ -89,13 +89,14 @@ export function ResponseItems({ humanMsg, botMsg, item }) {
   return (
     <>
       <div key={item} className="place-items-end overflow-hidden">
-        <div className="lg:max-w-md my-5 sm:max-w-sm max-w-52">
+        <div key={item} className="lg:max-w-md my-5 sm:max-w-sm max-w-52">
           <div
+            key={item}
             className={`${
               humanMsg && "bg-hoveringIcon"
             } rounded-xl px-5 py-2.5`}
           >
-            <p>{humanMsg}</p>
+            <p key={item}>{humanMsg}</p>
           </div>
         </div>
       </div>

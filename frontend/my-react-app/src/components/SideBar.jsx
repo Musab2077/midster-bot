@@ -12,7 +12,7 @@ export default function SideBar({ children, iconResponse, designing }) {
           iconResponse
             ? `w-64 bg-sidebarBg overflow-y-auto ${designing}`
             : "w-14 bg-mainBg border border-sidebarBg border-r-black"
-        } min-h-screen pt-4 px-4`}
+        } min-h-screen pt-4 px-3`}
       >
         <nav>
           <div className="flex flex-col">

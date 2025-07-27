@@ -5,7 +5,7 @@ const Test = () => {
     const [response, setResponse] = useState(false);
 
     const handleResponse = () => {
-        setResponse(response)
+        setResponse(!response)
     }
     
     useEffect(()=>{
@@ -17,9 +17,14 @@ const Test = () => {
             <button className='bg-red-600 p-1' onClick={handleResponse}>
                 hello
             </button>
-            {response && (
+            {response ? (
                 <p>
-                    secret
+                    secret true
+                </p>
+                
+            ): (
+                <p>
+                    secret false
                 </p>
             )}
         </div>

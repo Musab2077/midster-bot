@@ -28,9 +28,10 @@ export default function Chat(props) {
   const [overlaySideBar, setOverlaySideBar] = useState(false);
   const [sideBarIconHover, setSideBarIconHover] = useState("");
   const [activeChatId, setActiveChatId] = useState(null);
+  const [deleteResponse, setDeleteResponse] = useState();
   const [context, setContext] = useState("MidsterBot");
 
-  const { chatIds } = useParams();
+  const { chatIds = 0 } = useParams();
 
   const backendUrl = "http://127.0.0.1:8000";
 
@@ -118,53 +119,72 @@ export default function Chat(props) {
     };
   }, [chatIds]);
 
-  function handleSavedChat(id, context) {
+  function handleSavedChat(id) {
     setActiveChatId(id);
     setChatId(id);
     navigate(`/chat/${id}`);
     setResponses([]);
     setOverlaySideBar(false);
-    setContext(context);
 
-    axios
-      .get(`${backendUrl}/accessing_chat/${id}`, {
-        headers: { "Content-Type": "application/json" },
-      })
-      .then((output) => {
-        const backendRes = output.data;
-        const newResponses = backendRes.map((e) => ({
-          human: e.human,
-          bot: e.bot,
-        }));
-        setResponses(newResponses);
-        setChatResponse(true);
-        setMessages("");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      axios
+        .post(
+          `${backendUrl}/accessing_chat`,
+          {
+            email_id: localStorage.getItem("email_id"),
+            chat_id: id,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+        .then((output) => {
+          if (output.data.exist) {
+            const backendRes = output.data.response;
+            const newResponses = backendRes.map((e) => ({
+              human: e.human,
+              bot: e.bot,
+            }));
+            setResponses(newResponses);
+            setChatResponse(true);
+            setMessages("");
+            setContext(output.data.context);
+          } else if (output.data.exist === false) {
+            handleNewChat();
+          }
+        })
+        .catch((error) => {});
+    } catch {
+      console.log("theres an error in the backend");
+    }
   }
 
-  useEffect(() => {
-    handleSavedChat(chatIds, context);
-    console.log(chatIds, context);
-  }, []);
-
-  const handleNewChat = () => {
-    navigate("/");
+  function handleNewChat() {
+    navigate("/chat/0");
     setMessages("");
     setResponses([]);
-    setActiveChatId(null);
     setChatId(0);
     setOverlaySideBar(false);
     setContext("MidsterBot");
-  };
+    setActiveChatId(null);
+  }
 
-  const handleDelete = (e) => {
-    e.stopPropagation();
-    console.log(e.target.id);
-  };
+  function handleDelete (id) {
+    axios.delete(`${backendUrl}/deleting_chat/${id}`)
+    .catch((error)=> {
+      console.log(error)
+    })
+    setSideButtons(prev => prev.filter(item => item.chat_id !== 10));
+  }
 
+  useEffect(() => {
+    if (chatIds > 0) {
+      handleSavedChat(chatIds, context);
+    } else {
+      handleNewChat();
+    }
+  }, [chatIds]);
+  
   return (
     <>
       <div className="flex flex-row h-screen bg-mainBg text-white">
@@ -181,7 +201,7 @@ export default function Chat(props) {
                   <button
                     id="new chat"
                     className="rounded-md hover:bg-hoveringIcon place-items-center size-8"
-                    onClick={handleNewChat}
+                    onClick={() => navigate("/chat/0")}
                   >
                     <IoChatboxEllipsesOutline className="size-5" />
                   </button>
@@ -199,9 +219,7 @@ export default function Chat(props) {
                     sideButtons.map((e) => (
                       <div
                         id={e.chat_id}
-                        onClick={(e) =>
-                          handleSavedChat(e.target.id, e.target.innerText)
-                        }
+                        onClick={(e) => navigate(`/chat/${e.target.id}`)}
                         className={`${
                           activeChatId == e.chat_id
                             ? "bg-hoveringIcon"
@@ -211,10 +229,11 @@ export default function Chat(props) {
                         <SideBarSavedChat savedChat={e.context} />
                         <button
                           className="text-red-600 hover:bg-stone-800 rounded-lg p-1"
+                          id={e.chat_id}
                           key={e.chat_id}
-                          onClick={handleDelete}
+                          onClick={(k) => {k.stopPropagation(); handleDelete(e.chat_id)}}
                         >
-                          <MdOutlineDelete className="size-5" />
+                          <MdOutlineDelete id={e.chat_id} className="size-5" />
                         </button>
                       </div>
                     ))}
@@ -233,7 +252,7 @@ export default function Chat(props) {
                     <button
                       id="new chat"
                       className="rounded-md hover:bg-hoveringIcon place-items-center size-8"
-                      onClick={handleNewChat}
+                      onClick={() => navigate("/chat/0")}
                     >
                       <IoChatboxEllipsesOutline className="size-5" />
                     </button>
@@ -261,9 +280,7 @@ export default function Chat(props) {
                       <div
                         key={value}
                         id={e.chat_id}
-                        onClick={(e) =>
-                          handleSavedChat(e.target.id, e.target.innerText)
-                        }
+                        onClick={(e) => navigate(`/chat/${e.target.id}`)}
                         className={`${
                           activeChatId == e.chat_id
                             ? "bg-hoveringIcon"
@@ -275,9 +292,9 @@ export default function Chat(props) {
                           className="text-red-600 hover:bg-stone-800 rounded-lg p-1"
                           id={e.chat_id}
                           key={value}
-                          onClick={handleDelete}
+                          onClick={(k) => {k.stopPropagation(); handleDelete(e.chat_id)}}
                         >
-                          <MdOutlineDelete className="size-5" />
+                          <MdOutlineDelete id={e.chat_id} className="size-5" />
                         </button>
                       </div>
                     ))}
